@@ -1,0 +1,12 @@
+nodes/
+credentials/
+test/
+scripts/
+*.ts
+!dist/**/*.ts
+tsconfig.json
+.eslintrc.js
+.eslintrc.prepublish.js
+.prettierrc
+.gitignore
+coverage/
