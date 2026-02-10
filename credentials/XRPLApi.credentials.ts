@@ -1,4 +1,7 @@
 import {
+	IAuthenticateGeneric,
+	ICredentialDataDecryptedObject,
+	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
 } from 'n8n-workflow';
@@ -6,15 +9,8 @@ import {
 export class XRPLApi implements ICredentialType {
 	name = 'xrplApi';
 	displayName = 'XRPL API';
+	documentationUrl = 'https://xrpl.org/';
 	properties: INodeProperties[] = [
-		{
-			displayName: 'Server URL',
-			name: 'serverUrl',
-			type: 'string',
-			default: 'https://xrplcluster.com',
-			description: 'The XRPL server endpoint URL',
-			required: true,
-		},
 		{
 			displayName: 'Network',
 			name: 'network',
@@ -32,57 +28,96 @@ export class XRPLApi implements ICredentialType {
 					name: 'Devnet',
 					value: 'devnet',
 				},
+				{
+					name: 'AMM Devnet',
+					value: 'amm-devnet',
+				},
 			],
 			default: 'mainnet',
 			description: 'The XRPL network to connect to',
 		},
 		{
-			displayName: 'Wallet Seed/Secret',
+			displayName: 'Server URL',
+			name: 'serverUrl',
+			type: 'string',
+			default: '',
+			placeholder: 'wss://xrplcluster.com',
+			description: 'Custom XRPL server URL (optional - leave empty to use default network servers)',
+		},
+		{
+			displayName: 'Wallet Seed',
 			name: 'walletSeed',
 			type: 'string',
-			typeOptions: {
-				password: true,
-			},
+			typeOptions: { password: true },
 			default: '',
-			description: 'The wallet seed or secret for signing transactions (required for write operations)',
+			placeholder: 'sXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+			description: 'The wallet seed (private key) for transaction signing. Required for transaction operations. Leave empty for read-only operations.',
+		},
+		{
+			displayName: 'Key Type',
+			name: 'keyType',
+			type: 'options',
+			options: [
+				{
+					name: 'secp256k1',
+					value: 'secp256k1',
+				},
+				{
+					name: 'ed25519',
+					value: 'ed25519',
+				},
+			],
+			default: 'secp256k1',
+			description: 'The cryptographic algorithm used for key generation and signing',
 			displayOptions: {
 				show: {
-					'@version': [1],
+					walletSeed: [
+						{ _type: 'expression' },
+						{ _type: 'string', _value: { $ne: '' } },
+					],
 				},
 			},
 		},
 		{
-			displayName: 'Account Address',
-			name: 'accountAddress',
-			type: 'string',
-			default: '',
-			description: 'The XRPL account address (optional, can be derived from seed)',
-			displayOptions: {
-				show: {
-					'@version': [1],
-				},
-			},
-		},
-		{
-			displayName: 'Use WebSocket',
-			name: 'useWebSocket',
-			type: 'boolean',
-			default: false,
-			description: 'Whether to use WebSocket connection for real-time data',
-		},
-		{
-			displayName: 'Connection Timeout',
+			displayName: 'Connection Timeout (ms)',
 			name: 'connectionTimeout',
 			type: 'number',
-			default: 30000,
+			default: 5000,
 			description: 'Connection timeout in milliseconds',
 		},
 		{
-			displayName: 'Request Timeout',
+			displayName: 'Request Timeout (ms)',
 			name: 'requestTimeout',
 			type: 'number',
-			default: 20000,
+			default: 30000,
 			description: 'Request timeout in milliseconds',
 		},
 	];
+
+	authenticate: IAuthenticateGeneric = {
+		type: 'generic',
+		properties: {
+			headers: {},
+		},
+	};
+
+	test: ICredentialTestRequest = {
+		request: {
+			method: 'POST',
+			url: '',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: {
+				method: 'server_info',
+				params: [{}],
+			},
+		},
+	};
+
+	async preAuthentication(credentials: ICredentialDataDecryptedObject) {
+		// Custom authentication logic will be handled in the node execution
+		// This method is called before making requests
+		return credentials;
+	}
 }
