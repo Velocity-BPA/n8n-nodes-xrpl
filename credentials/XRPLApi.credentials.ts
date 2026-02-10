@@ -11,87 +11,90 @@ export class XRPLApi implements ICredentialType {
 	documentationUrl = 'https://xrpl.org/';
 	properties: INodeProperties[] = [
 		{
-			displayName: 'Network',
-			name: 'network',
+			displayName: 'Server URL',
+			name: 'serverUrl',
+			type: 'string',
+			default: 'https://xrplcluster.com',
+			placeholder: 'https://xrplcluster.com',
+			description: 'XRPL server URL (mainnet, testnet, or custom server)',
+		},
+		{
+			displayName: 'Network ID',
+			name: 'networkId',
 			type: 'options',
 			options: [
 				{
 					name: 'Mainnet',
-					value: 'mainnet',
+					value: 0,
 				},
 				{
 					name: 'Testnet',
-					value: 'testnet',
+					value: 1,
 				},
 				{
-					name: 'Custom',
-					value: 'custom',
+					name: 'Devnet',
+					value: 2,
 				},
 			],
-			default: 'mainnet',
-			description: 'The XRPL network to connect to',
-		},
-		{
-			displayName: 'Server URL',
-			name: 'serverUrl',
-			type: 'string',
-			default: '',
-			placeholder: 'wss://s1.ripple.com',
-			displayOptions: {
-				show: {
-					network: ['custom'],
-				},
-			},
-			description: 'Custom XRPL server URL (WebSocket or HTTP JSON-RPC)',
-		},
-		{
-			displayName: 'Wallet Secret/Seed',
-			name: 'walletSecret',
-			type: 'string',
-			typeOptions: {
-				password: true,
-			},
-			default: '',
-			placeholder: 'sXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-			description: 'XRPL wallet secret (seed) for transaction signing. Required for write operations.',
+			default: 0,
+			description: 'XRPL Network ID for transaction signing',
 		},
 		{
 			displayName: 'Account Address',
 			name: 'accountAddress',
 			type: 'string',
 			default: '',
-			placeholder: 'rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-			description: 'XRPL account address. Will be derived from wallet secret if not provided.',
+			placeholder: 'rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe',
+			description: 'Your XRPL account address (for read operations and as default sender)',
 		},
 		{
-			displayName: 'Rate Limit',
-			name: 'rateLimit',
-			type: 'number',
-			default: 200,
-			description: 'Requests per minute limit (default: 200 for public servers)',
+			displayName: 'Private Key',
+			name: 'privateKey',
+			type: 'string',
+			typeOptions: {
+				password: true,
+			},
+			default: '',
+			placeholder: 'Your private key (secp256k1 format)',
+			description: 'Private key for signing transactions (required for write operations). Keep this secure!',
 		},
 		{
-			displayName: 'Connection Timeout',
-			name: 'timeout',
-			type: 'number',
-			default: 30000,
-			description: 'Connection timeout in milliseconds',
+			displayName: 'Use WebSocket',
+			name: 'useWebSocket',
+			type: 'boolean',
+			default: false,
+			description: 'Whether to use WebSocket connection instead of HTTP for API calls',
+		},
+		{
+			displayName: 'WebSocket URL',
+			name: 'webSocketUrl',
+			type: 'string',
+			default: 'wss://xrplcluster.com',
+			placeholder: 'wss://xrplcluster.com',
+			displayOptions: {
+				show: {
+					useWebSocket: [true],
+				},
+			},
+			description: 'WebSocket URL for real-time XRPL connections',
 		},
 	];
 
 	authenticate: IAuthenticateGeneric = {
 		type: 'generic',
-		properties: {},
+		properties: {
+			headers: {
+				'Content-Type': 'application/json',
+				'User-Agent': 'n8n-nodes-xrpl/1.0.0',
+			},
+		},
 	};
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: '={{$credentials.network === "mainnet" ? "https://xrplcluster.com" : $credentials.network === "testnet" ? "https://s.altnet.rippletest.net:51234" : $credentials.serverUrl}}',
+			baseURL: '={{$credentials.serverUrl}}',
 			url: '/',
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
 			body: {
 				method: 'server_info',
 				params: [{}],
