@@ -1,25 +1,19 @@
 {
   "name": "n8n-nodes-xrpl",
   "version": "1.2.0",
-  "description": "n8n community node for XRPL (XRP Ledger) blockchain operations",
+  "description": "n8n community node for XRPL (XRP Ledger) API integration",
   "keywords": [
-    "n8n-community-node-package",
-    "xrpl",
-    "xrp",
-    "blockchain",
-    "cryptocurrency",
-    "nft",
-    "defi"
+    "n8n-community-node-package"
   ],
-  "license": "SEE LICENSE IN LICENSE.md",
-  "homepage": "https://github.com/VelocityBPA/n8n-nodes-xrpl",
+  "license": "BSL-1.0",
+  "homepage": "https://github.com/velocity-bpa/n8n-nodes-xrpl",
   "author": {
     "name": "Velocity BPA",
     "email": "support@velocitybpa.com"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VelocityBPA/n8n-nodes-xrpl.git"
+    "url": "https://github.com/velocity-bpa/n8n-nodes-xrpl.git"
   },
   "main": "index.js",
   "scripts": {
@@ -28,7 +22,7 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
     "lintfix": "eslint nodes credentials package.json --fix",
-    "prepublishOnly": "npm run build && npm run lint -s"
+    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
   },
   "files": [
     "dist"
@@ -43,14 +37,16 @@
     ]
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "~5.45.0",
-    "eslint-plugin-n8n-nodes-base": "~1.11.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint-plugin-n8n-nodes-base": "^1.11.0",
     "gulp": "^4.0.2",
     "n8n-workflow": "*",
     "prettier": "^2.7.1",
-    "typescript": "~4.8.4"
+    "typescript": "^4.8.4"
   },
   "dependencies": {
-    "n8n-core": "*"
+    "n8n-core": "*",
+    "xrpl": "^2.11.0",
+    "ripple-lib": "^1.10.1"
   }
 }
