@@ -1,28 +1,30 @@
 {
   "name": "n8n-nodes-xrpl",
   "version": "1.2.0",
-  "description": "n8n community node for XRPL (XRP Ledger) blockchain operations",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "homepage": "https://github.com/VelocityBPA/n8n-nodes-xrpl",
+  "description": "n8n community node for XRPL (XRP Ledger) integration",
+  "keywords": [
+    "n8n-community-node-package",
+    "xrpl",
+    "xrp",
+    "ripple",
+    "blockchain",
+    "cryptocurrency"
+  ],
+  "license": "BSL-1.1",
+  "homepage": "https://github.com/velocity-bpa/n8n-nodes-xrpl",
   "author": {
     "name": "Velocity BPA",
     "email": "support@velocitybpa.com"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VelocityBPA/n8n-nodes-xrpl.git"
+    "url": "https://github.com/velocity-bpa/n8n-nodes-xrpl.git"
   },
-  "keywords": [
-    "n8n-community-node-package",
-    "xrpl",
-    "xrp",
-    "blockchain",
-    "cryptocurrency",
-    "ledger",
-    "payments",
-    "nft",
-    "defi"
-  ],
+  "engines": {
+    "node": ">=18.10",
+    "pnpm": ">=8.6.10"
+  },
+  "packageManager": "pnpm@8.6.10",
   "main": "index.js",
   "scripts": {
     "build": "tsc && gulp build:icons",
@@ -45,7 +47,6 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "^18.16.16",
     "@typescript-eslint/parser": "^5.45.0",
     "eslint-plugin-n8n-nodes-base": "^1.11.0",
     "gulp": "^4.0.2",
@@ -58,7 +59,6 @@
   },
   "dependencies": {
     "n8n-core": "*",
-    "xrpl": "^2.11.0",
-    "ripple-lib": "^1.10.0"
+    "xrpl": "^3.0.0"
   }
 }
