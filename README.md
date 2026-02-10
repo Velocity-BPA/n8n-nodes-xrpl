@@ -8,24 +8,25 @@
 >
 > For licensing information, visit https://velobpa.com/licensing or contact licensing@velobpa.com.
 
-A comprehensive n8n community node for the XRP Ledger (XRPL) blockchain network. This node provides account management, payment operations, NFT handling, and trust line management capabilities, enabling seamless integration of XRPL functionality into your n8n workflows with support for both XRP and issued currency transactions.
+This n8n community node provides comprehensive integration with the XRP Ledger (XRPL), offering 3 resources with full account management, payment processing, and trust line operations for building powerful blockchain automation workflows.
 
 ![n8n Community Node](https://img.shields.io/badge/n8n-Community%20Node-blue)
 ![License](https://img.shields.io/badge/license-BSL--1.1-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
-![XRPL](https://img.shields.io/badge/XRPL-Mainnet-green)
-![WebSocket](https://img.shields.io/badge/WebSocket-Supported-orange)
+![XRPL](https://img.shields.io/badge/XRPL-Mainnet%20%26%20Testnet-green)
+![Crypto](https://img.shields.io/badge/Crypto-Payments-orange)
+![DeFi](https://img.shields.io/badge/DeFi-Integration-purple)
 
 ## Features
 
 - **Account Management** - Retrieve account information, balances, transaction history, and validate addresses
-- **XRP Payments** - Send XRP payments with destination tags and fee customization
-- **Issued Currency Support** - Handle payments and balances for custom tokens and stablecoins
-- **NFT Operations** - Query and manage Non-Fungible Tokens on the XRPL
-- **Trust Lines** - Manage trust relationships between accounts for issued currencies
-- **Payment Pathfinding** - Find optimal paths for cross-currency transactions
-- **Multiple Network Support** - Connect to mainnet, testnet, or custom XRPL servers
-- **Real-time Updates** - WebSocket support for live data streaming
+- **XRP & Token Payments** - Send XRP and issued currency payments with automatic pathfinding
+- **Trust Line Operations** - Manage trust relationships for issued currencies and token holdings
+- **Multi-Network Support** - Connect to mainnet, testnet, or custom XRPL nodes
+- **Wallet Generation** - Create new XRPL wallets with cryptographic key pairs
+- **Transaction History** - Access comprehensive paginated transaction records
+- **Address Validation** - Verify XRPL address format and checksums
+- **Cross-Currency Paths** - Find optimal payment routes across different currencies
 
 ## Installation
 
@@ -60,92 +61,82 @@ n8n start
 
 | Field | Description | Required |
 |-------|-------------|----------|
-| Server URL | XRPL server endpoint (JSON-RPC or WebSocket) | Yes |
-| Private Key | Account private key for transaction signing (if sending transactions) | No |
-| Connection Type | Choose between JSON-RPC (HTTP) or WebSocket | Yes |
-| Network | Select mainnet, testnet, or custom network | Yes |
+| Server URL | XRPL server endpoint (mainnet, testnet, or custom) | Yes |
+| Wallet Seed | Secret seed for transaction signing (if sending transactions) | No |
+| Network | Network selection (mainnet/testnet/custom) | Yes |
+| Connection Timeout | Request timeout in milliseconds | No |
 
 ## Resources & Operations
 
-### 1. Account
+### 1. Accounts
 
 | Operation | Description |
 |-----------|-------------|
-| Get Account Info | Retrieve account information including sequence number, balance, and flags |
-| Get Account Balances | Get all balances for an account including XRP and issued currencies |
-| Get Account Lines | Retrieve trust lines established by an account |
-| Get Account NFTs | List all NFTs owned by an account |
-| Get Account Transactions | Fetch transaction history for an account with pagination |
-| Validate Address | Verify if an address is a valid XRPL address format |
+| Get Account Info | Retrieves comprehensive account information including sequence, balance, and flags |
+| Get Account Balances | Gets all currency balances for an account including XRP and issued currencies |
+| Get Account Transaction History | Retrieves paginated transaction history for an account |
+| Validate Address | Validates XRPL address format and checksum |
+| Generate Wallet | Generates a new XRPL wallet with address and keys |
 
 ### 2. Payments
 
 | Operation | Description |
 |-----------|-------------|
-| Send XRP | Send XRP payment between accounts with optional destination tag |
-| Send Issued Currency | Send custom token or stablecoin payments |
-| Find Payment Paths | Discover optimal paths for cross-currency transactions |
-| Estimate Transaction Fee | Calculate current network fees for transactions |
+| Send XRP Payment | Sends direct XRP payment between accounts |
+| Send Issued Currency Payment | Sends issued currency payment with automatic pathfinding |
+| Pathfind Cross Currency | Finds payment paths for cross-currency transactions |
 
 ### 3. Trust Lines
 
 | Operation | Description |
 |-----------|-------------|
-| Set Trust Line | Establish or modify trust relationship for issued currencies |
-| Remove Trust Line | Remove trust line by setting limit to zero |
-| Get Trust Line Info | Retrieve specific trust line details between accounts |
-
-### 4. NFTs
-
-| Operation | Description |
-|-----------|-------------|
-| Get NFT Details | Retrieve metadata and ownership information for specific NFT |
-| Transfer NFT | Transfer NFT ownership between accounts |
-| Burn NFT | Permanently destroy an NFT token |
+| Get Trust Lines | Retrieves all trust lines for an account |
+| Set Trust Line | Creates or modifies a trust line for issued currencies |
+| Remove Trust Line | Removes an existing trust line |
 
 ## Usage Examples
 
 ```javascript
 // Get account information
-const accountInfo = await xrpl.account.getAccountInfo({
-  account: "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
-  ledger_index: "validated"
-});
+{
+  "account": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+  "ledger_index": "validated"
+}
 
 // Send XRP payment
-const payment = await xrpl.payments.sendXrp({
-  account: "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
-  destination: "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
-  amount: "1000000", // 1 XRP in drops
-  destination_tag: 12345
-});
+{
+  "account": "rSenderAddress123456789",
+  "destination": "rRecipientAddress987654321",
+  "amount": "1000000", // 1 XRP in drops
+  "destination_tag": 12345,
+  "memo": "Payment for services"
+}
 
-// Get account balances including issued currencies
-const balances = await xrpl.account.getAccountBalances({
-  account: "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
-  ledger_index: "current"
-});
+// Get account balances
+{
+  "account": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+  "ledger_index": "current"
+}
 
-// Send issued currency payment
-const issuedCurrencyPayment = await xrpl.payments.sendIssuedCurrency({
-  account: "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
-  destination: "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
-  amount: "100",
-  currency: "USD",
-  issuer: "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q"
-});
+// Set trust line for USD
+{
+  "account": "rTrustingAccount123456789",
+  "currency": "USD",
+  "issuer": "rIssuerAddress987654321",
+  "limit": "1000"
+}
 ```
 
 ## Error Handling
 
 | Error | Description | Solution |
 |-------|-------------|----------|
-| `tecNO_DST_INSUF_XRP` | Destination account doesn't have enough XRP | Ensure destination has minimum 10 XRP reserve |
-| `tecUNFUNDED_PAYMENT` | Insufficient funds for payment | Check account balance and reserve requirements |
-| `temINVALID_ACCOUNT_ID` | Invalid account address format | Validate address using validateAddress operation |
-| `telINSUF_FEE_P` | Fee too low for current network load | Use estimateTransactionFee to get current rates |
-| `tecNO_LINE` | Trust line doesn't exist | Establish trust line before sending issued currency |
-| `tecPATH_DRY` | No payment path found | Use findPaymentPaths to discover available routes |
+| `tecUNFUNDED_PAYMENT` | Insufficient XRP balance for transaction | Ensure account has enough XRP for payment and fees |
+| `temINVALID_ACCOUNT_ID` | Invalid account address format | Verify address format and checksum using validate operation |
+| `tecNO_LINE` | Trust line does not exist | Create trust line before attempting currency transactions |
+| `telINSUF_FEE_P` | Transaction fee too low | Increase transaction fee or use auto-fee calculation |
+| `tecPATH_DRY` | No payment path found | Check liquidity or use different source currencies |
+| `temDISABLED` | Account or feature disabled | Verify account status and feature availability |
 
 ## Development
 
@@ -190,5 +181,5 @@ Contributions are welcome! Please ensure:
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/Velocity-BPA/n8n-nodes-xrpl/issues)
-- **XRPL Documentation**: [XRPL Developer Documentation](https://xrpl.org/docs.html)
-- **XRPL Community**: [XRPL Developer Discord](https://discord.gg/sfX3ERAMjH)
+- **XRPL Documentation**: [xrpl.org/docs](https://xrpl.org/docs/)
+- **XRPL Community**: [XRPLedger.org](https://xrpledger.org/)
