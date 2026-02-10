@@ -8,25 +8,24 @@
 >
 > For licensing information, visit https://velobpa.com/licensing or contact licensing@velobpa.com.
 
-This n8n community node provides comprehensive integration with the XRP Ledger (XRPL) blockchain, offering 3 resources with 14 operations for account management, trust line operations, and payment functionality including XRP transfers, issued currency transactions, and NFT operations.
+This n8n community node provides comprehensive integration with the XRP Ledger (XRPL) blockchain network. With 3 main resources and 17+ operations, it enables seamless account management, payment processing, trust line operations, and NFT interactions within your n8n workflows.
 
 ![n8n Community Node](https://img.shields.io/badge/n8n-Community%20Node-blue)
 ![License](https://img.shields.io/badge/license-BSL--1.1-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
-![XRPL](https://img.shields.io/badge/XRPL-Compatible-brightgreen)
-![WebSocket](https://img.shields.io/badge/WebSocket-Supported-orange)
-![Mainnet](https://img.shields.io/badge/Network-Mainnet%20%7C%20Testnet-blue)
+![XRPL](https://img.shields.io/badge/XRPL-Mainnet%20%26%20Testnet-green)
+![Blockchain](https://img.shields.io/badge/Blockchain-XRP%20Ledger-orange)
 
 ## Features
 
-- **Account Operations** - Retrieve account information, balances, NFTs, and transaction history
-- **Wallet Management** - Generate new wallets and validate XRPL addresses
-- **Trust Line Control** - Create, modify, remove, and freeze trust lines for issued currencies
-- **XRP Payments** - Send native XRP with memo support and fee customization
-- **Issued Currency Transfers** - Send custom tokens and issued currencies on XRPL
-- **Cross-Currency Pathfinding** - Find optimal payment paths for currency exchanges
-- **Multi-Network Support** - Works with XRPL mainnet, testnet, and custom endpoints
-- **WebSocket Integration** - Real-time data streaming with fallback to REST API
+- **Account Operations** - Retrieve account information, balances, NFTs, transaction history, and generate new wallets
+- **Payment Processing** - Send XRP and issued currencies with cross-currency pathfinding capabilities
+- **Trust Line Management** - Create, modify, remove, and freeze trust lines for token relationships
+- **Multi-Network Support** - Connect to both XRPL Mainnet and Testnet environments
+- **Comprehensive Validation** - Built-in address validation and transaction verification
+- **Real-time Data** - Access live blockchain data through JSON-RPC endpoints
+- **Developer Friendly** - Full TypeScript support with detailed error handling
+- **Secure Authentication** - Custom credential management for wallet integration
 
 ## Installation
 
@@ -61,11 +60,10 @@ n8n start
 
 | Field | Description | Required |
 |-------|-------------|----------|
-| Network | Choose between Mainnet, Testnet, or Custom endpoint | Yes |
-| Custom Endpoint | Custom XRPL server URL (HTTP/HTTPS or WebSocket) | No |
-| Secret Key | XRPL account secret key for signing transactions | Yes (for write operations) |
-| Account Address | XRPL account address (auto-derived from secret if not provided) | No |
-| Connection Type | Preferred connection method: REST API or WebSocket | No |
+| Network | Select Mainnet or Testnet | Yes |
+| Wallet Address | Your XRPL wallet address (classic format) | Yes |
+| Private Key | Your wallet's private key (keep secure) | Yes |
+| JSON-RPC URL | Custom endpoint (optional, defaults provided) | No |
 
 ## Resources & Operations
 
@@ -73,30 +71,30 @@ n8n start
 
 | Operation | Description |
 |-----------|-------------|
-| Get Account Info | Retrieve detailed account information including reserve requirements and flags |
-| Get Account Balances | Fetch all balances including XRP and issued currencies |
+| Get Account Info | Retrieve basic account information including sequence numbers and flags |
+| Get Account Balances | Fetch XRP balance and all issued currency balances |
 | Get Account NFTs | List all NFTs owned by the account |
-| Get Transaction History | Retrieve paginated transaction history for the account |
-| Validate Address | Check if an XRPL address is valid and properly formatted |
-| Generate Wallet | Create a new XRPL wallet with address and secret key |
+| Get Transaction History | Retrieve account transaction history with pagination |
+| Validate Address | Verify if an XRPL address is valid and properly formatted |
+| Generate Wallet | Create a new XRPL wallet with address and keys |
 
-### 2. Trust Line
+### 2. TrustLine
 
 | Operation | Description |
 |-----------|-------------|
-| Get Trust Lines | Retrieve all trust lines associated with an account |
-| Create Trust Line | Establish a new trust line for an issued currency |
+| Get Trust Lines | Retrieve all trust lines for an account |
+| Create Trust Line | Establish a new trust line to hold issued currencies |
 | Modify Trust Line | Update trust line limits and settings |
 | Remove Trust Line | Delete an existing trust line (balance must be zero) |
-| Deep Freeze Trust Line | Permanently freeze a trust line to prevent future modifications |
+| Deep Freeze Trust Line | Permanently freeze a trust line (irreversible) |
 
 ### 3. Payment
 
 | Operation | Description |
 |-----------|-------------|
-| Send XRP | Transfer native XRP between accounts with optional memos |
-| Send Issued Currency | Transfer custom tokens and issued currencies |
-| Pathfind Cross-Currency | Find payment paths for cross-currency transactions |
+| Send XRP | Transfer XRP between accounts |
+| Send Issued Currency | Transfer tokens/currencies via established trust lines |
+| Pathfind Cross-currency | Find optimal payment paths for currency conversions |
 
 ## Usage Examples
 
@@ -104,33 +102,32 @@ n8n start
 // Get account information
 {
   "account": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
-  "ledger_index": "validated"
+  "network": "mainnet"
 }
 
 // Send XRP payment
 {
-  "destination": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
-  "amount": "1000000", // 1 XRP in drops
-  "memo": "Payment for services"
+  "fromAddress": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+  "toAddress": "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+  "amount": "1000000",
+  "destinationTag": 12345
 }
 
 // Create trust line for USD
 {
+  "account": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
   "currency": "USD",
-  "issuer": "rhub8VRN55s94qWKDv6jmDy1pUykJzF3wq",
-  "limit": "1000",
-  "quality_in": 1000000000,
-  "quality_out": 1000000000
+  "issuer": "rVnYNK9yuxBz4uP8zC8LEFokM2GqAEgLBh",
+  "limit": "1000"
 }
 
 // Send issued currency
 {
-  "destination": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
-  "amount": {
-    "currency": "USD",
-    "value": "100",
-    "issuer": "rhub8VRN55s94qWKDv6jmDy1pUykJzF3wq"
-  }
+  "fromAddress": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+  "toAddress": "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+  "currency": "USD",
+  "issuer": "rVnYNK9yuxBz4uP8zC8LEFokM2GqAEgLBh",
+  "amount": "100"
 }
 ```
 
@@ -138,12 +135,12 @@ n8n start
 
 | Error | Description | Solution |
 |-------|-------------|----------|
-| `tecUNFUNDED_PAYMENT` | Insufficient funds for transaction | Check account balance and ensure adequate XRP for fees |
-| `tecNO_DST_INSUF_XRP` | Destination requires XRP reserve | Ensure destination has minimum 10 XRP reserve |
-| `temINVALID_FLAG` | Invalid transaction flag | Review transaction flags and use valid XRPL flag values |
-| `terNO_ACCOUNT` | Account does not exist | Verify account address and ensure it's activated on the ledger |
-| `tecNO_PERMISSION` | Insufficient permissions | Check account settings and required authorization flags |
-| `WebSocket Connection Failed` | Cannot connect to XRPL server | Switch to REST API or try alternative endpoint URLs |
+| Invalid Address | Provided XRPL address format is incorrect | Use classic format (starts with 'r') and validate with the validate address operation |
+| Insufficient Balance | Account lacks funds for transaction | Check account balances and ensure adequate XRP for fees |
+| Trust Line Required | Cannot hold issued currency without trust line | Create trust line to issuer before receiving tokens |
+| Network Timeout | Connection to XRPL network failed | Check network connectivity and try switching between mainnet/testnet |
+| Invalid Signature | Transaction signing failed with provided private key | Verify private key matches the specified account address |
+| Sequence Number Error | Transaction sequence is out of order | Refresh account info to get current sequence number |
 
 ## Development
 
@@ -189,4 +186,4 @@ Contributions are welcome! Please ensure:
 
 - **Issues**: [GitHub Issues](https://github.com/Velocity-BPA/n8n-nodes-xrpl/issues)
 - **XRPL Documentation**: [XRPL.org Developer Docs](https://xrpl.org/docs.html)
-- **XRPL Community**: [XRPL Developer Discord](https://discord.gg/sfX3ERAMjH)
+- **XRPL Community**: [XRPLedger.org](https://xrpledger.org/)
