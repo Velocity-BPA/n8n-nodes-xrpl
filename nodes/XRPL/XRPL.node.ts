@@ -20,8 +20,8 @@ import {
   NodeApiError,
 } from 'n8n-workflow';
 
-import { Client, Wallet, isValidAddress } from 'xrpl';
-import crypto from 'crypto';
+import { Client } from 'xrpl';
+import { Wallet } from 'xrpl';
 
 export class XRPL implements INodeType {
   description: INodeTypeDescription = {
@@ -52,11 +52,11 @@ export class XRPL implements INodeType {
         noDataExpression: true,
         options: [
           {
-            name: 'Accounts',
-            value: 'accounts',
+            name: 'Account',
+            value: 'account',
           }
         ],
-        default: 'accounts',
+        default: 'account',
       },
       // Operation dropdowns per resource
 {
@@ -66,38 +66,44 @@ export class XRPL implements INodeType {
   noDataExpression: true,
   displayOptions: {
     show: {
-      resource: ['accounts'],
+      resource: ['account'],
     },
   },
   options: [
     {
       name: 'Get Account Info',
       value: 'getAccountInfo',
-      description: 'Retrieves comprehensive account information including sequence, balance, and flags',
+      description: 'Get basic account information including sequence number, balance, and flags',
       action: 'Get account info',
     },
     {
       name: 'Get Account Balances',
       value: 'getAccountBalances',
-      description: 'Gets all currency balances for an account including XRP and issued currencies',
+      description: 'Get account balances for XRP and all issued currencies',
       action: 'Get account balances',
     },
     {
-      name: 'Get Account Transaction History',
-      value: 'getAccountTransactionHistory',
-      description: 'Retrieves paginated transaction history for an account',
-      action: 'Get account transaction history',
+      name: 'Get Account NFTs',
+      value: 'getAccountNfts',
+      description: 'Get all NFTs owned by an account',
+      action: 'Get account NFTs',
+    },
+    {
+      name: 'Get Transaction History',
+      value: 'getTransactionHistory',
+      description: 'Get transaction history for an account',
+      action: 'Get transaction history',
     },
     {
       name: 'Validate Address',
       value: 'validateAddress',
-      description: 'Validates XRPL address format and checksum',
+      description: 'Validate an XRPL address format and checksum',
       action: 'Validate address',
     },
     {
       name: 'Generate Wallet',
       value: 'generateWallet',
-      description: 'Generates a new XRPL wallet with address and keys',
+      description: 'Generate a new XRPL wallet with public/private key pair',
       action: 'Generate wallet',
     },
   ],
@@ -111,12 +117,12 @@ export class XRPL implements INodeType {
   required: true,
   displayOptions: {
     show: {
-      resource: ['accounts'],
-      operation: ['getAccountInfo', 'getAccountBalances', 'getAccountTransactionHistory'],
+      resource: ['account'],
+      operation: ['getAccountInfo'],
     },
   },
   default: '',
-  description: 'The XRPL account address',
+  description: 'The account address to get information for',
 },
 {
   displayName: 'Ledger Index',
@@ -124,12 +130,12 @@ export class XRPL implements INodeType {
   type: 'string',
   displayOptions: {
     show: {
-      resource: ['accounts'],
-      operation: ['getAccountInfo', 'getAccountBalances'],
+      resource: ['account'],
+      operation: ['getAccountInfo'],
     },
   },
   default: 'validated',
-  description: 'The ledger index to query. Use "validated", "closed", "current", or a specific ledger number',
+  description: 'The ledger index to use (validated, closed, or specific number)',
 },
 {
   displayName: 'Queue',
@@ -137,38 +143,105 @@ export class XRPL implements INodeType {
   type: 'boolean',
   displayOptions: {
     show: {
-      resource: ['accounts'],
+      resource: ['account'],
       operation: ['getAccountInfo'],
     },
   },
   default: false,
-  description: 'Whether to include queued transactions in the response',
+  description: 'Whether to return queue information',
 },
 {
-  displayName: 'Minimum Ledger Index',
-  name: 'ledger_index_min',
-  type: 'number',
+  displayName: 'Signer Lists',
+  name: 'signer_lists',
+  type: 'boolean',
   displayOptions: {
     show: {
-      resource: ['accounts'],
-      operation: ['getAccountTransactionHistory'],
+      resource: ['account'],
+      operation: ['getAccountInfo'],
     },
   },
-  default: -1,
-  description: 'Minimum ledger index to search (-1 for earliest available)',
+  default: false,
+  description: 'Whether to return signer lists',
 },
 {
-  displayName: 'Maximum Ledger Index',
-  name: 'ledger_index_max',
-  type: 'number',
+  displayName: 'Strict',
+  name: 'strict',
+  type: 'boolean',
   displayOptions: {
     show: {
-      resource: ['accounts'],
-      operation: ['getAccountTransactionHistory'],
+      resource: ['account'],
+      operation: ['getAccountInfo'],
     },
   },
-  default: -1,
-  description: 'Maximum ledger index to search (-1 for latest available)',
+  default: false,
+  description: 'Whether to return only validated ledger data',
+},
+{
+  displayName: 'Account Address',
+  name: 'account',
+  type: 'string',
+  required: true,
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getAccountBalances'],
+    },
+  },
+  default: '',
+  description: 'The account address to get balances for',
+},
+{
+  displayName: 'Ledger Index',
+  name: 'ledger_index',
+  type: 'string',
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getAccountBalances'],
+    },
+  },
+  default: 'validated',
+  description: 'The ledger index to use (validated, closed, or specific number)',
+},
+{
+  displayName: 'Strict',
+  name: 'strict',
+  type: 'boolean',
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getAccountBalances'],
+    },
+  },
+  default: false,
+  description: 'Whether to return only validated ledger data',
+},
+{
+  displayName: 'Account Address',
+  name: 'account',
+  type: 'string',
+  required: true,
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getAccountNfts'],
+    },
+  },
+  default: '',
+  description: 'The account address to get NFTs for',
+},
+{
+  displayName: 'Ledger Index',
+  name: 'ledger_index',
+  type: 'string',
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getAccountNfts'],
+    },
+  },
+  default: 'validated',
+  description: 'The ledger index to use (validated, closed, or specific number)',
 },
 {
   displayName: 'Limit',
@@ -176,12 +249,12 @@ export class XRPL implements INodeType {
   type: 'number',
   displayOptions: {
     show: {
-      resource: ['accounts'],
-      operation: ['getAccountTransactionHistory'],
+      resource: ['account'],
+      operation: ['getAccountNfts'],
     },
   },
-  default: 200,
-  description: 'Maximum number of transactions to return (1-400)',
+  default: 400,
+  description: 'Maximum number of NFTs to return',
 },
 {
   displayName: 'Marker',
@@ -189,12 +262,104 @@ export class XRPL implements INodeType {
   type: 'string',
   displayOptions: {
     show: {
-      resource: ['accounts'],
-      operation: ['getAccountTransactionHistory'],
+      resource: ['account'],
+      operation: ['getAccountNfts'],
     },
   },
   default: '',
-  description: 'Pagination marker from previous request',
+  description: 'Pagination marker from a previous response',
+},
+{
+  displayName: 'Account Address',
+  name: 'account',
+  type: 'string',
+  required: true,
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getTransactionHistory'],
+    },
+  },
+  default: '',
+  description: 'The account address to get transaction history for',
+},
+{
+  displayName: 'Min Ledger Index',
+  name: 'ledger_index_min',
+  type: 'number',
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getTransactionHistory'],
+    },
+  },
+  default: -1,
+  description: 'Minimum ledger index to search',
+},
+{
+  displayName: 'Max Ledger Index',
+  name: 'ledger_index_max',
+  type: 'number',
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getTransactionHistory'],
+    },
+  },
+  default: -1,
+  description: 'Maximum ledger index to search',
+},
+{
+  displayName: 'Limit',
+  name: 'limit',
+  type: 'number',
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getTransactionHistory'],
+    },
+  },
+  default: 20,
+  description: 'Maximum number of transactions to return',
+},
+{
+  displayName: 'Marker',
+  name: 'marker',
+  type: 'string',
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getTransactionHistory'],
+    },
+  },
+  default: '',
+  description: 'Pagination marker from a previous response',
+},
+{
+  displayName: 'Forward',
+  name: 'forward',
+  type: 'boolean',
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getTransactionHistory'],
+    },
+  },
+  default: false,
+  description: 'Whether to return transactions in forward chronological order',
+},
+{
+  displayName: 'Binary',
+  name: 'binary',
+  type: 'boolean',
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['getTransactionHistory'],
+    },
+  },
+  default: false,
+  description: 'Whether to return transaction data in binary format',
 },
 {
   displayName: 'Address',
@@ -203,7 +368,7 @@ export class XRPL implements INodeType {
   required: true,
   displayOptions: {
     show: {
-      resource: ['accounts'],
+      resource: ['account'],
       operation: ['validateAddress'],
     },
   },
@@ -216,7 +381,7 @@ export class XRPL implements INodeType {
   type: 'options',
   displayOptions: {
     show: {
-      resource: ['accounts'],
+      resource: ['account'],
       operation: ['generateWallet'],
     },
   },
@@ -231,7 +396,20 @@ export class XRPL implements INodeType {
     },
   ],
   default: 'secp256k1',
-  description: 'The cryptographic algorithm to use for key generation',
+  description: 'The cryptographic algorithm to use',
+},
+{
+  displayName: 'Entropy',
+  name: 'entropy',
+  type: 'string',
+  displayOptions: {
+    show: {
+      resource: ['account'],
+      operation: ['generateWallet'],
+    },
+  },
+  default: '',
+  description: 'Optional entropy for wallet generation (hex string)',
 },
     ],
   };
@@ -241,8 +419,8 @@ export class XRPL implements INodeType {
     const resource = this.getNodeParameter('resource', 0) as string;
 
     switch (resource) {
-      case 'accounts':
-        return [await executeAccountsOperations.call(this, items)];
+      case 'account':
+        return [await executeAccountOperations.call(this, items)];
       default:
         throw new NodeOperationError(this.getNode(), `The resource "${resource}" is not supported`);
     }
@@ -253,190 +431,196 @@ export class XRPL implements INodeType {
 // Resource Handler Functions
 // ============================================================
 
-async function executeAccountsOperations(
+async function executeAccountOperations(
   this: IExecuteFunctions,
   items: INodeExecutionData[],
 ): Promise<INodeExecutionData[]> {
   const returnData: INodeExecutionData[] = [];
   const operation = this.getNodeParameter('operation', 0) as string;
   
-  // Get credentials and setup client
-  const credentials = await this.getCredentials('xrplApi');
-  const serverUrl = credentials.serverUrl as string || 'https://xrplcluster.com/';
-  const client = new Client(serverUrl);
+  const client = new Client('https://xrplcluster.com');
   
-  // Connect to client for operations that need it
-  const needsConnection = ['getAccountInfo', 'getAccountBalances', 'getAccountTransactionHistory'];
-  if (needsConnection.includes(operation)) {
-    await client.connect();
-  }
-
   for (let i = 0; i < items.length; i++) {
     try {
       let result: any;
       
       switch (operation) {
         case 'getAccountInfo':
-          const account = this.getNodeParameter('account', i) as string;
+          const accountInfoAccount = this.getNodeParameter('account', i) as string;
           const ledgerIndex = this.getNodeParameter('ledger_index', i) as string;
           const queue = this.getNodeParameter('queue', i) as boolean;
+          const signerLists = this.getNodeParameter('signer_lists', i) as boolean;
+          const strict = this.getNodeParameter('strict', i) as boolean;
+          
+          await client.connect();
           
           const accountInfoRequest: any = {
             command: 'account_info',
-            account,
-            ledger_index: ledgerIndex || 'validated',
+            account: accountInfoAccount,
+            ledger_index: ledgerIndex,
+            queue,
+            signer_lists: signerLists,
+            strict,
           };
           
-          if (queue) {
-            accountInfoRequest.queue = true;
-          }
-          
           result = await client.request(accountInfoRequest);
+          await client.disconnect();
           break;
           
         case 'getAccountBalances':
-          const balanceAccount = this.getNodeParameter('account', i) as string;
-          const balanceLedgerIndex = this.getNodeParameter('ledger_index', i) as string;
+          const balancesAccount = this.getNodeParameter('account', i) as string;
+          const balancesLedgerIndex = this.getNodeParameter('ledger_index', i) as string;
+          const balancesStrict = this.getNodeParameter('strict', i) as boolean;
           
-          // Get account lines (trust lines) for issued currencies
-          const linesRequest = {
+          await client.connect();
+          
+          const balancesRequest: any = {
             command: 'account_lines',
-            account: balanceAccount,
-            ledger_index: balanceLedgerIndex || 'validated',
+            account: balancesAccount,
+            ledger_index: balancesLedgerIndex,
+            strict: balancesStrict,
           };
           
-          const linesResponse = await client.request(linesRequest);
-          
-          // Get XRP balance from account info
-          const infoRequest = {
+          const accountInfoForBalance = await client.request({
             command: 'account_info',
-            account: balanceAccount,
-            ledger_index: balanceLedgerIndex || 'validated',
-          };
+            account: balancesAccount,
+            ledger_index: balancesLedgerIndex,
+          });
           
-          const infoResponse = await client.request(infoRequest);
+          const linesResult = await client.request(balancesRequest);
           
-          const balances = [
-            {
-              currency: 'XRP',
-              value: (parseInt(infoResponse.result.account_data.Balance) / 1000000).toString(),
-              issuer: null,
-            },
-          ];
-          
-          if (linesResponse.result.lines) {
-            for (const line of linesResponse.result.lines) {
-              balances.push({
+          result = {
+            account: balancesAccount,
+            balances: [
+              {
+                currency: 'XRP',
+                value: accountInfoForBalance.result.account_data.Balance,
+              },
+              ...linesResult.result.lines.map((line: any) => ({
                 currency: line.currency,
                 value: line.balance,
                 issuer: line.account,
-              });
-            }
-          }
-          
-          result = { balances };
-          break;
-          
-        case 'getAccountTransactionHistory':
-          const historyAccount = this.getNodeParameter('account', i) as string;
-          const ledgerMin = this.getNodeParameter('ledger_index_min', i) as number;
-          const ledgerMax = this.getNodeParameter('ledger_index_max', i) as number;
-          const limit = this.getNodeParameter('limit', i) as number;
-          const marker = this.getNodeParameter('marker', i) as string;
-          
-          const txHistoryRequest: any = {
-            command: 'account_tx',
-            account: historyAccount,
-            limit: Math.min(Math.max(limit || 200, 1), 400),
+              })),
+            ],
           };
           
-          if (ledgerMin >= 0) {
-            txHistoryRequest.ledger_index_min = ledgerMin;
+          await client.disconnect();
+          break;
+          
+        case 'getAccountNfts':
+          const nftsAccount = this.getNodeParameter('account', i) as string;
+          const nftsLedgerIndex = this.getNodeParameter('ledger_index', i) as string;
+          const nftsLimit = this.getNodeParameter('limit', i) as number;
+          const nftsMarker = this.getNodeParameter('marker', i) as string;
+          
+          await client.connect();
+          
+          const nftsRequest: any = {
+            command: 'account_nfts',
+            account: nftsAccount,
+            ledger_index: nftsLedgerIndex,
+            limit: nftsLimit,
+          };
+          
+          if (nftsMarker) {
+            nftsRequest.marker = nftsMarker;
           }
           
-          if (ledgerMax >= 0) {
-            txHistoryRequest.ledger_index_max = ledgerMax;
+          result = await client.request(nftsRequest);
+          await client.disconnect();
+          break;
+          
+        case 'getTransactionHistory':
+          const historyAccount = this.getNodeParameter('account', i) as string;
+          const ledgerIndexMin = this.getNodeParameter('ledger_index_min', i) as number;
+          const ledgerIndexMax = this.getNodeParameter('ledger_index_max', i) as number;
+          const historyLimit = this.getNodeParameter('limit', i) as number;
+          const historyMarker = this.getNodeParameter('marker', i) as string;
+          const forward = this.getNodeParameter('forward', i) as boolean;
+          const binary = this.getNodeParameter('binary', i) as boolean;
+          
+          await client.connect();
+          
+          const historyRequest: any = {
+            command: 'account_tx',
+            account: historyAccount,
+            limit: historyLimit,
+            forward,
+            binary,
+          };
+          
+          if (ledgerIndexMin !== -1) {
+            historyRequest.ledger_index_min = ledgerIndexMin;
           }
           
-          if (marker) {
-            txHistoryRequest.marker = marker;
+          if (ledgerIndexMax !== -1) {
+            historyRequest.ledger_index_max = ledgerIndexMax;
           }
           
-          result = await client.request(txHistoryRequest);
+          if (historyMarker) {
+            historyRequest.marker = historyMarker;
+          }
+          
+          result = await client.request(historyRequest);
+          await client.disconnect();
           break;
           
         case 'validateAddress':
-          const addressToValidate = this.getNodeParameter('address', i) as string;
+          const address = this.getNodeParameter('address', i) as string;
           
           try {
-            const isValid = isValidAddress(addressToValidate);
+            const { isValid, xAddress, classicAddress } = require('xrpl').isValidAddress;
+            const validation = isValid ? isValid(address) : false;
+            
             result = {
-              address: addressToValidate,
-              isValid,
-              type: isValid ? 'account' : 'invalid',
+              address,
+              isValid: validation,
+              type: validation ? (address.startsWith('X') ? 'X-Address' : 'Classic') : null,
             };
           } catch (error) {
             result = {
-              address: addressToValidate,
+              address,
               isValid: false,
-              type: 'invalid',
-              error: error.message,
+              error: 'Invalid address format',
             };
           }
           break;
           
         case 'generateWallet':
-          const algorithm = this.getNodeParameter('algorithm', i) as 'secp256k1' | 'ed25519';
+          const algorithm = this.getNodeParameter('algorithm', i) as string;
+          const entropy = this.getNodeParameter('entropy', i) as string;
           
-          let wallet: Wallet;
-          if (algorithm === 'ed25519') {
-            // Generate ed25519 wallet
-            const seed = crypto.randomBytes(16);
-            wallet = Wallet.fromSeed(seed.toString('hex'), { algorithm: 'ed25519' });
+          let wallet: any;
+          
+          if (entropy) {
+            wallet = Wallet.fromEntropy(entropy, { algorithm: algorithm as any });
           } else {
-            // Generate secp256k1 wallet (default)
-            wallet = Wallet.generate();
+            wallet = Wallet.generate(algorithm as any);
           }
           
           result = {
-            address: wallet.address,
             publicKey: wallet.publicKey,
             privateKey: wallet.privateKey,
+            classicAddress: wallet.classicAddress,
             seed: wallet.seed,
-            algorithm: algorithm,
-            warning: 'Store these credentials securely. Never share your private key or seed.',
           };
           break;
           
         default:
-          throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`, {
-            itemIndex: i,
-          });
+          throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
       }
       
-      returnData.push({
-        json: result,
-        pairedItem: { item: i },
-      });
-      
+      returnData.push({ json: result, pairedItem: { item: i } });
     } catch (error) {
       if (this.continueOnFail()) {
-        returnData.push({
-          json: { error: error.message },
-          pairedItem: { item: i },
+        returnData.push({ 
+          json: { error: error.message }, 
+          pairedItem: { item: i } 
         });
       } else {
-        if (error.name === 'RippledError') {
-          throw new NodeApiError(this.getNode(), error, { itemIndex: i });
-        }
-        throw new NodeOperationError(this.getNode(), error.message, { itemIndex: i });
+        throw new NodeApiError(this.getNode(), error);
       }
     }
-  }
-  
-  // Disconnect client if it was connected
-  if (needsConnection.includes(operation)) {
-    await client.disconnect();
   }
   
   return returnData;
