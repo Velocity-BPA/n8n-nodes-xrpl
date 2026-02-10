@@ -1,28 +1,33 @@
 {
   "compilerOptions": {
-    "target": "es2019",
-    "lib": ["es2019"],
+    "target": "ES2019",
     "module": "commonjs",
-    "moduleResolution": "node",
+    "lib": ["ES2019"],
     "declaration": true,
-    "outDir": "dist",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "removeComments": true,
     "strict": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "resolveJsonModule": true
   },
   "include": [
-    "src/**/*",
-    "credentials/**/*",
-    "nodes/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "**/*.test.ts"
+    "dist"
   ]
 }
