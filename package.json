@@ -55,6 +55,7 @@
     "n8n-workflow": "*"
   },
   "dependencies": {
-    "n8n-core": "*"
+    "n8n-core": "*",
+    "xrpl": "^4.6.0"
   }
 }
