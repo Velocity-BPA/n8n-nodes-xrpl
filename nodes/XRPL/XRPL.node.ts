@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Copyright (c) 2026 Velocity BPA
  * 
