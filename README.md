@@ -8,25 +8,25 @@
 >
 > For licensing information, visit https://velobpa.com/licensing or contact licensing@velobpa.com.
 
-A comprehensive n8n community node for interacting with the XRP Ledger (XRPL) blockchain. This node provides 15+ resources covering accounts, payments, DEX trading, NFTs, DeFi operations, and advanced features like AMMs and lending protocols, enabling seamless integration of XRPL functionality into your n8n workflows.
+This n8n community node provides seamless integration with the XRP Ledger (XRPL) blockchain network. With 8 comprehensive resources including Account, Transaction, Payment, Ledger, OrderBook, NFT, Server, and AMM operations, this node enables developers to build powerful blockchain automation workflows with enterprise-grade reliability and comprehensive XRPL functionality.
 
 ![n8n Community Node](https://img.shields.io/badge/n8n-Community%20Node-blue)
 ![License](https://img.shields.io/badge/license-BSL--1.1-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
-![XRP Ledger](https://img.shields.io/badge/XRP%20Ledger-Compatible-green)
-![DeFi](https://img.shields.io/badge/DeFi-Enabled-orange)
-![NFT](https://img.shields.io/badge/NFT-Supported-purple)
+![XRPL](https://img.shields.io/badge/XRPL-Blockchain-green)
+![Crypto](https://img.shields.io/badge/Crypto-Payments-orange)
+![DeFi](https://img.shields.io/badge/DeFi-Compatible-purple)
 
 ## Features
 
-- **Complete Account Management** - Create, fund, and manage XRPL accounts with full transaction history
-- **DEX Trading Operations** - Place orders, execute trades, and manage order books on the decentralized exchange
-- **NFT Minting & Trading** - Create, mint, transfer, and burn NFTs with full metadata support
-- **DeFi Protocol Integration** - Interact with AMMs, lending protocols, and liquidity pools
-- **Payment Processing** - Send XRP and token payments with path finding and multi-hop routing
-- **Advanced Financial Instruments** - Manage escrows, checks, payment channels, and trust lines
-- **Vault & Credential Management** - Secure asset storage and identity verification workflows
-- **Real-time Simulation** - Test transactions and strategies before execution
+- **Complete Account Management** - Query account info, balances, transaction history, and trust lines
+- **Transaction Processing** - Submit, validate, and monitor XRPL transactions with full metadata
+- **Payment Operations** - Send XRP and issued currencies with path finding and multi-hop support
+- **Ledger Data Access** - Retrieve ledger information, close times, and historical data
+- **Order Book Integration** - Access real-time trading data and liquidity information
+- **NFT Functionality** - Mint, transfer, and manage Non-Fungible Tokens on XRPL
+- **Server Information** - Monitor network health, fee levels, and validator status
+- **AMM Support** - Interact with Automated Market Makers for DeFi operations
 
 ## Installation
 
@@ -62,9 +62,8 @@ n8n start
 | Field | Description | Required |
 |-------|-------------|----------|
 | API Key | Your XRPL service provider API key | Yes |
-| Network | XRPL network (mainnet, testnet, devnet) | Yes |
-| Server URL | Custom XRPL server URL (optional) | No |
-| Account Secret | Wallet secret for transaction signing | Yes |
+| Network | Target network (Mainnet, Testnet, Devnet) | Yes |
+| Server URL | Custom XRPL server endpoint (optional) | No |
 
 ## Resources & Operations
 
@@ -72,209 +71,118 @@ n8n start
 
 | Operation | Description |
 |-----------|-------------|
-| Get Info | Retrieve account information, balances, and settings |
-| Create | Generate new XRPL account with wallet credentials |
-| Fund | Add XRP to account (testnet/devnet only) |
-| Set Settings | Configure account flags, domain, and email hash |
-| Get History | Fetch transaction history and account activity |
-| Get Objects | Retrieve account-owned objects (offers, trust lines, etc.) |
+| Get Info | Retrieve account information including balance and settings |
+| Get Objects | Fetch account objects like trust lines and offers |
+| Get Transactions | Get transaction history for an account |
+| Get Balances | Retrieve all currency balances for an account |
 
-### 2. TrustLine
+### 2. Transaction
 
 | Operation | Description |
 |-----------|-------------|
-| Create | Establish trust line for token holdings |
-| Modify | Update trust line limit or flags |
-| Delete | Remove unused trust line |
-| List | Get all trust lines for an account |
-| Get Rippling | Check rippling status between accounts |
+| Submit | Submit a signed transaction to the network |
+| Get | Retrieve transaction details by hash |
+| Validate | Validate transaction format and signatures |
+| Monitor | Track transaction status and confirmations |
 
 ### 3. Payment
 
 | Operation | Description |
 |-----------|-------------|
-| Send XRP | Transfer XRP between accounts |
-| Send Token | Transfer issued tokens via trust lines |
-| Path Find | Discover optimal payment paths |
-| Multi-hop | Execute complex cross-currency payments |
-| Partial | Handle partial payment scenarios |
+| Send XRP | Send XRP payments between accounts |
+| Send Currency | Send issued currencies and tokens |
+| Find Paths | Discover payment paths for cross-currency transfers |
+| Estimate Cost | Calculate transaction fees and exchange rates |
 
-### 4. DEX
-
-| Operation | Description |
-|-----------|-------------|
-| Place Order | Create buy/sell orders on the DEX |
-| Cancel Order | Remove existing orders |
-| Get Order Book | Retrieve current order book data |
-| Get Trades | Fetch recent trade history |
-| Market Data | Get ticker and price information |
-
-### 5. NFT
+### 4. Ledger
 
 | Operation | Description |
 |-----------|-------------|
-| Mint | Create new NFT tokens |
-| Transfer | Send NFTs between accounts |
-| Burn | Destroy NFT tokens |
+| Get Current | Retrieve current ledger information |
+| Get Historical | Access historical ledger data by index |
+| Get Entries | Fetch specific ledger entries and objects |
+| Get Stats | Get ledger statistics and metrics |
+
+### 5. OrderBook
+
+| Operation | Description |
+|-----------|-------------|
+| Get Offers | Retrieve order book data for currency pairs |
+| Get Trades | Fetch recent trades and execution history |
+| Get Depth | Access market depth and liquidity information |
+| Get Ticker | Get price ticker and 24h statistics |
+
+### 6. Nft
+
+| Operation | Description |
+|-----------|-------------|
+| Mint | Create new NFTs on the XRPL |
+| Transfer | Transfer NFT ownership between accounts |
 | Get Info | Retrieve NFT metadata and properties |
-| List Collection | Get NFTs owned by account |
-| Set Metadata | Update NFT attributes |
+| Get Collection | Fetch NFTs from a specific collection |
 
-### 6. Escrow
-
-| Operation | Description |
-|-----------|-------------|
-| Create | Set up time or condition-locked escrow |
-| Finish | Release escrowed funds |
-| Cancel | Cancel escrow and return funds |
-| Get Info | Check escrow status and conditions |
-
-### 7. Check
+### 7. Server
 
 | Operation | Description |
 |-----------|-------------|
-| Create | Issue a check (like writing a check) |
-| Cash | Redeem a check for payment |
-| Cancel | Void an unused check |
-| Get Info | Retrieve check details and status |
+| Get Info | Retrieve server status and configuration |
+| Get Fees | Get current network fee levels |
+| Get Validators | Access validator list and status |
+| Health Check | Monitor network health and connectivity |
 
-### 8. PaymentChannel
-
-| Operation | Description |
-|-----------|-------------|
-| Create | Open payment channel between parties |
-| Fund | Add XRP to existing channel |
-| Close | Close channel and settle final amounts |
-| Verify Claim | Validate channel claim signatures |
-
-### 9. AMM
+### 8. Amm
 
 | Operation | Description |
 |-----------|-------------|
-| Create Pool | Establish new AMM liquidity pool |
-| Deposit | Add liquidity to existing pool |
-| Withdraw | Remove liquidity and claim fees |
-| Vote | Participate in AMM governance |
-| Get Info | Retrieve pool statistics and rates |
-
-### 10. PermissionedDomain
-
-| Operation | Description |
-|-----------|-------------|
-| Register | Register domain for permissioned operations |
-| Verify | Validate domain ownership |
-| List Permissions | Get domain access rights |
-| Grant Access | Allow domain-specific operations |
-
-### 11. Credential
-
-| Operation | Description |
-|-----------|-------------|
-| Issue | Create verifiable credentials |
-| Verify | Validate credential authenticity |
-| Revoke | Invalidate existing credentials |
-| Get Status | Check credential validity |
-
-### 12. MultiPurposeToken
-
-| Operation | Description |
-|-----------|-------------|
-| Issue | Create multi-utility token |
-| Configure | Set token properties and behaviors |
-| Transfer | Move tokens with utility functions |
-| Burn | Destroy tokens and update supply |
-
-### 13. Vault
-
-| Operation | Description |
-|-----------|-------------|
-| Create | Set up secure asset vault |
-| Deposit | Store assets in vault |
-| Withdraw | Remove assets with authorization |
-| Get Balance | Check vault holdings |
-
-### 14. Lending
-
-| Operation | Description |
-|-----------|-------------|
-| Create Offer | Offer assets for lending |
-| Borrow | Take loan against collateral |
-| Repay | Pay back loan with interest |
-| Liquidate | Force liquidation of undercollateralized loans |
-
-### 15. Simulation
-
-| Operation | Description |
-|-----------|-------------|
-| Test Transaction | Simulate transaction without execution |
-| Path Analysis | Analyze payment path costs |
-| Market Impact | Estimate DEX trade effects |
-| Gas Estimation | Calculate transaction fees |
-
-### 16. Utility
-
-| Operation | Description |
-|-----------|-------------|
-| Generate Wallet | Create new wallet credentials |
-| Validate Address | Verify XRPL address format |
-| Convert Currency | Get exchange rates |
-| Network Status | Check XRPL network health |
+| Get Info | Retrieve AMM pool information and statistics |
+| Add Liquidity | Provide liquidity to AMM pools |
+| Remove Liquidity | Withdraw liquidity from AMM pools |
+| Swap | Execute token swaps through AMM |
 
 ## Usage Examples
 
 ```javascript
+// Get account balance and info
+{
+  "account": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+  "ledger_index": "validated"
+}
+```
+
+```javascript
 // Send XRP payment
 {
-  "resource": "Payment",
-  "operation": "Send XRP",
-  "destination": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
-  "amount": "100",
-  "destinationTag": 12345,
-  "memo": "Invoice payment"
+  "account": "rSenderAccount123...",
+  "destination": "rDestAccount456...",
+  "amount": "1000000", // 1 XRP in drops
+  "destination_tag": 12345
 }
 ```
 
 ```javascript
-// Create NFT
+// Get order book for XRP/USD pair
 {
-  "resource": "NFT",
-  "operation": "Mint",
-  "tokenTaxon": 0,
-  "uri": "https://example.com/nft/metadata.json",
-  "flags": {
-    "transferable": true,
-    "onlyXRP": false
-  }
-}
-```
-
-```javascript
-// Place DEX order
-{
-  "resource": "DEX",
-  "operation": "Place Order",
-  "takerGets": {
+  "taker_pays": {
     "currency": "USD",
-    "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-    "value": "100"
+    "issuer": "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q"
   },
-  "takerPays": "150000000"
-}
-```
-
-```javascript
-// Create AMM pool
-{
-  "resource": "AMM",
-  "operation": "Create Pool",
-  "asset1": {
+  "taker_gets": {
     "currency": "XRP"
   },
-  "asset2": {
-    "currency": "USD",
-    "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"
-  },
-  "tradingFee": 500
+  "limit": 20
+}
+```
+
+```javascript
+// Mint NFT
+{
+  "account": "rNFTIssuer789...",
+  "nftoken_taxon": 0,
+  "transfer_fee": 1000,
+  "flags": {
+    "burnable": true,
+    "transferable": true
+  }
 }
 ```
 
@@ -282,12 +190,12 @@ n8n start
 
 | Error | Description | Solution |
 |-------|-------------|----------|
-| `tecUNFUNDED_PAYMENT` | Insufficient XRP balance for transaction | Check account balance and ensure adequate funds |
-| `tecNO_LINE_REDUNDANT` | Trust line already exists | Use modify operation instead of create |
-| `tefPAST_SEQ` | Transaction sequence number too low | Get current account sequence and increment |
-| `tecDST_TAG_NEEDED` | Destination requires tag but none provided | Include destination tag in payment |
-| `tecNO_PERMISSION` | Account lacks required permissions | Verify account flags and authorization |
-| `tecINVARIANT_FAILED` | Transaction violates ledger invariants | Check transaction parameters and limits |
+| InvalidCredentials | API key authentication failed | Verify API key and network settings |
+| InsufficientFunds | Account lacks funds for transaction | Check account balance and fee requirements |
+| NetworkTimeout | Connection to XRPL network timed out | Retry request or check network status |
+| InvalidTransaction | Transaction format or signature invalid | Validate transaction parameters and signing |
+| RateLimitExceeded | API rate limit has been exceeded | Implement request throttling or upgrade plan |
+| AccountNotFound | Specified account does not exist | Verify account address format and existence |
 
 ## Development
 
@@ -332,5 +240,5 @@ Contributions are welcome! Please ensure:
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/Velocity-BPA/n8n-nodes-xrpl/issues)
-- **XRPL Documentation**: [XRP Ledger Dev Portal](https://xrpl.org/docs.html)
+- **XRPL Documentation**: [XRPL.org Developer Portal](https://xrpl.org/docs.html)
 - **XRPL Community**: [XRPL Developer Discord](https://discord.gg/sfX3ERAMjH)
